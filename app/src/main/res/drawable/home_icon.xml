@@ -1,0 +1,39 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- House Roof -->
+    <path
+        android:fillColor="#D94A4A"
+        android:pathData="M3,9 L12,3 L21,9 L19.5,9 L12,4.5 L4.5,9 Z"/>
+
+    <!-- House Body -->
+    <path
+        android:fillColor="#DBF2FF"
+        android:pathData="M4.5,9 L19.5,9 L19.5,21 L4.5,21 Z"/>
+
+    <!-- Lower Wall Shade -->
+    <path
+        android:fillColor="#B5DDF5"
+        android:pathData="M4.5,15 L19.5,15 L19.5,21 L4.5,21 Z"/>
+
+    <!-- Door -->
+    <path
+        android:fillColor="#FFC49C"
+        android:pathData="M10,13 L14,13 L14,21 L10,21 Z"/>
+
+    <!-- Door Knob -->
+    <path
+        android:fillColor="#A16A4A"
+        android:pathData="M13.2,16.5 L13.6,16.5 L13.6,17 L13.2,17 Z"/>
+
+    <!-- Outline -->
+    <path
+        android:strokeColor="#7496C4"
+        android:strokeWidth="0.4"
+        android:fillColor="@null"
+        android:pathData="M3,9 L12,3 L21,9 L21,21 L3,21 Z"/>
+
+</vector>

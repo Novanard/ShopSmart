@@ -2,4 +2,11 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="bg_color">#DBD9D9</color> <!-- Light Gray for a cleaner look -->
+    <color name="primary">#FF9800</color> <!-- Orange for main buttons -->
+    <color name="secondary">#03A9F4</color> <!-- Light Blue for accents -->
+    <color name="text_primary">#212121</color> <!-- Dark text color -->
+    <color name="text_secondary">#757575</color> <!-- Lighter text color -->
+    <color name="divider">#BDBDBD</color> <!-- Gray divider line color -->
+    <color name="card_bg">#FFFFFF</color> <!-- Card background color -->
 </resources>
