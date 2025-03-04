@@ -65,7 +65,7 @@ class LoginFragment : Fragment() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()
-                    (activity as? MainActivity)?.loadFragment(HomePageFragment())
+                    (activity as? MainActivity)?.loadFragment(ShopFragment())
                 } else {
                     Toast.makeText(requireContext(), "Login failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                 }
