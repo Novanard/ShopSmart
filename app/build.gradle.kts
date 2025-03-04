@@ -37,8 +37,11 @@ android {
 }
 
 dependencies {
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.analytics.ktx) // Example Firebase service
+    implementation(platform(libs.firebase.bom)) // Firebase BOM
+    implementation(libs.firebase.analytics.ktx) // Firebase Analytics
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.firestore.ktx)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
