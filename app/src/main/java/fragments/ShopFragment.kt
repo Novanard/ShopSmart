@@ -52,17 +52,34 @@ class ShopFragment : Fragment() {
 
     private fun loadItemsForDepartment(department: String) {
         database.collection("Items")
+            .whereEqualTo("department", department)
             .get()
             .addOnSuccessListener { documents ->
-                Log.d("FirestoreDebug", "🔥 Total items in Firestore: ${documents.size()}")
-                for (doc in documents) {
-                    Log.d("FirestoreDebug", "🔥 Item Data: ${doc.data}")
+                val items = documents.map { doc ->
+                    Item(
+                        name = doc.getString("name") ?: "",
+                        price = when (val priceValue = doc.get("price")) {
+                            is Number -> priceValue.toDouble()
+                            else -> 0.0
+                        },
+                        quantity = when (val quantityValue = doc.get("quantity")) {
+                            is Number -> quantityValue.toInt()
+                            else -> 0
+                        },
+                        timesSold = when (val timesSoldValue = doc.get("timesSold")) {
+                            is Number -> timesSoldValue.toInt()
+                            else -> 0
+                        },
+                        imageName = doc.getString("imageName") ?: "",
+                        department = doc.getString("department") ?: ""
+                    )
                 }
+                Log.d("FirestoreDebug", "Updating Adapter with ${items.size} items")
+                itemAdapter.updateItems(items)
             }
             .addOnFailureListener { e ->
-                Log.e("FirestoreDebug", "❌ Firestore fetch failed: ", e)
+                Log.e("FirestoreDebug", "Firestore fetch failed: ", e)
             }
-
-
     }
+
 }

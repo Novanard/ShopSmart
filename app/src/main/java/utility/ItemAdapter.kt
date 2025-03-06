@@ -41,7 +41,7 @@ class ItemAdapter(private var items: List<Item>) : RecyclerView.Adapter<ItemAdap
             priceTextView.text = "Price: $${item.price}"
             quantityTextView.text = "Available: ${item.quantity}"
 
-            // 🔥 Load image from drawable dynamically
+            //Load image from drawable dynamically
             val context = itemView.context
             val resId = context.resources.getIdentifier(item.imageName, "drawable", context.packageName)
             if (resId != 0) {
