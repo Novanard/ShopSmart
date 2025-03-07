@@ -7,11 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.Toast
-import androidx.recyclerview.widget.LinearLayoutManager
+import android.widget.EditText
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopsmart.R
 import com.google.firebase.firestore.FirebaseFirestore
+import utility.CartViewModel
 import utility.Item
 import utility.ItemAdapter
 
@@ -20,6 +22,7 @@ class ShopFragment : Fragment() {
     private lateinit var itemsRecyclerView: RecyclerView
     private lateinit var itemAdapter: ItemAdapter
     private lateinit var database: FirebaseFirestore
+    private lateinit var cartViewModel: CartViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -27,36 +30,35 @@ class ShopFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_shop, container, false)
 
         itemsRecyclerView = view.findViewById(R.id.itemsRecyclerView)
-        itemAdapter = ItemAdapter(emptyList())
-        itemsRecyclerView.layoutManager = LinearLayoutManager(context)
+        itemAdapter = ItemAdapter(emptyList(), isInCartFragment = false) { item, quantity ->
+            cartViewModel.addItemToCart(item, quantity)
+        }
         itemsRecyclerView.adapter = itemAdapter
+        itemsRecyclerView.layoutManager = GridLayoutManager(context, 2)
 
+        // Initialize Firestore and ViewModel
         database = FirebaseFirestore.getInstance()
-
-        // Buttons for departments
-        view.findViewById<Button>(R.id.btnVegetables).setOnClickListener {
-            loadItemsForDepartment("Vegetables")
-        }
-        view.findViewById<Button>(R.id.btnButchery).setOnClickListener {
-            loadItemsForDepartment("Butchery")
-        }
-        view.findViewById<Button>(R.id.btnBakery).setOnClickListener {
-            loadItemsForDepartment("Bakery")
-        }
-
-        // Load default department on start
+        cartViewModel = ViewModelProvider(requireActivity()).get(CartViewModel::class.java)
+        // Load items for default department on start
         loadItemsForDepartment("Vegetables")
 
         return view
     }
 
+    // Function to load items from Firestore for a specific department
+// Function to load items from Firestore for a specific department
+// Function to load items from Firestore for a specific department
+// Function to load items from Firestore for a specific department
     private fun loadItemsForDepartment(department: String) {
+        val items = mutableListOf<Pair<Item, Int>>() // A list of Pair<Item, Int>
+
         database.collection("Items")
             .whereEqualTo("department", department)
             .get()
             .addOnSuccessListener { documents ->
-                val items = documents.map { doc ->
-                    Item(
+                // Convert Firestore documents into Item objects and pair them with a quantity (defaulting to 0)
+                documents.forEach { doc ->
+                    val item = Item(
                         name = doc.getString("name") ?: "",
                         price = when (val priceValue = doc.get("price")) {
                             is Number -> priceValue.toDouble()
@@ -73,9 +75,14 @@ class ShopFragment : Fragment() {
                         imageName = doc.getString("imageName") ?: "",
                         department = doc.getString("department") ?: ""
                     )
+
+                    // Add the Item to the list paired with a quantity (in this case, defaulting to quantity 0)
+                    items.add(Pair(item, 0))  // You can replace '0' with any actual quantity if available
                 }
+
+                // Now that items are properly paired with quantities, update the adapter
                 Log.d("FirestoreDebug", "Updating Adapter with ${items.size} items")
-                itemAdapter.updateItems(items)
+                itemAdapter.updateItems(items) // Update the RecyclerView adapter
             }
             .addOnFailureListener { e ->
                 Log.e("FirestoreDebug", "Firestore fetch failed: ", e)
@@ -83,3 +90,4 @@ class ShopFragment : Fragment() {
     }
 
 }
+

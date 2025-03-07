@@ -7,15 +7,16 @@
 
     <item
         android:id="@+id/nav_search"
-        android:icon="@android:drawable/ic_menu_search"
-        android:title="@string/shop" />
+        android:icon="@drawable/shopping_bag"
+        android:title="@string/shop"
+        />
 
     <item
         android:id="@+id/nav_cart"
-        android:icon="@android:drawable/ic_menu_compass"
+        android:icon="@drawable/cart"
         android:title="@string/cart" />
     <item
         android:id="@+id/nav_profile"
-        android:icon="@android:drawable/ic_menu_compass"
-        android:title="@string/cart" />
+        android:icon="@drawable/profile"
+        android:title="@string/profile" />
 </menu>
