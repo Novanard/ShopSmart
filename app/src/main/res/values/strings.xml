@@ -14,4 +14,7 @@
     <string name="butchery">Butchery</string>
     <string name="bakery">Bakery</string>
     <string name="profile">Profile</string>
+    <string name="delete">Delete</string>
+    <string name="my_cart">My Cart</string>
+    <string name="checkout">Checkout</string>
 </resources>

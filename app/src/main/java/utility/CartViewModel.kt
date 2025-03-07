@@ -29,13 +29,22 @@ class CartViewModel : ViewModel() {
 
         // Update LiveData
         _cartItems.value = currentItems
-
-        // Log cart items after adding
-        Log.d("CartViewModel", "Cart items: ${currentItems.size}")
     }
 
-    // Get current cart items
+    fun removeItemFromCart(item: Item) {
+        val currentItems = _cartItems.value ?: mutableListOf()
+        val itemToRemove = currentItems.find { it.first == item }
+
+        if (itemToRemove != null) {
+            currentItems.remove(itemToRemove)
+            _cartItems.value = currentItems // Update LiveData
+        }
+    }
+
     fun getCartItems(): List<Pair<Item, Int>> {
         return _cartItems.value ?: emptyList()
+    }
+    fun clearCart() {
+        _cartItems.value = mutableListOf()
     }
 }

@@ -1,6 +1,8 @@
 package fragments
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +14,7 @@ import androidx.fragment.app.Fragment
 import com.example.shopsmart.MainActivity
 import com.example.shopsmart.R
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class LoginFragment : Fragment() {
     private lateinit var auth: FirebaseAuth
@@ -41,7 +44,6 @@ class LoginFragment : Fragment() {
                 Toast.makeText(requireContext(), "Please enter email and password", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-
             loginUser(email, password)
         }
 
@@ -63,12 +65,16 @@ class LoginFragment : Fragment() {
     private fun loginUser(email: String, password: String) {
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()
-                    (activity as? MainActivity)?.loadFragment(ShopFragment())
-                } else {
+                if (task.isSuccessful)
+                   onLoginSuccess()
+                else
                     Toast.makeText(requireContext(), "Login failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
-                }
             }
     }
+    private fun onLoginSuccess() {
+        Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()
+        // Redirect to CartFragment after successful login
+        (activity as? MainActivity)?.loadFragment(CartFragment())
+    }
+
 }

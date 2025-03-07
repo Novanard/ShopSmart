@@ -2,16 +2,44 @@ package utility
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopsmart.R
 
-class CartAdapter(private val items: List<Pair<Item, Int>>) : RecyclerView.Adapter<CartAdapter.CartViewHolder>() {
+class CartAdapter(
+    private var items: List<Pair<Item, Int>>,
+    private val onDeleteClicked: (Item) -> Unit // Lambda to handle delete clicks
+) : RecyclerView.Adapter<CartAdapter.CartViewHolder>() {
 
-    class CartViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val itemName: TextView = view.findViewById(R.id.itemName)
-        val itemPrice: TextView = view.findViewById(R.id.itemPrice)
-        val itemQuantity: TextView = view.findViewById(R.id.itemQuantity)
+    inner class CartViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        private val itemImage: ImageView = view.findViewById(R.id.itemImage)
+        private val itemName: TextView = view.findViewById(R.id.itemName)
+        private val itemPrice: TextView = view.findViewById(R.id.itemPrice)
+        private val itemQuantity: TextView = view.findViewById(R.id.itemQuantity)
+        private val deleteButton: Button = view.findViewById(R.id.deleteButton)
+
+        fun bind(item: Pair<Item, Int>) {
+            // Bind data to views
+            itemName.text = item.first.name
+            itemPrice.text = "Price: $${item.first.price}"
+            itemQuantity.text = "Qty: ${item.second}"
+
+            // Load product image
+            val context = itemView.context
+            val resId = context.resources.getIdentifier(item.first.imageName, "drawable", context.packageName)
+            if (resId != 0) {
+                itemImage.setImageResource(resId)
+            } else {
+                itemImage.setImageResource(R.drawable.shopsmart_transparent) // Default placeholder
+            }
+
+            // Handle delete button click
+            deleteButton.setOnClickListener {
+                onDeleteClicked(item.first)
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CartViewHolder {
@@ -21,11 +49,14 @@ class CartAdapter(private val items: List<Pair<Item, Int>>) : RecyclerView.Adapt
     }
 
     override fun onBindViewHolder(holder: CartViewHolder, position: Int) {
-        val (item, quantity) = items[position]
-        holder.itemName.text = item.name
-        holder.itemPrice.text = "$${item.price}"
-        holder.itemQuantity.text = "Qty: $quantity"
+        holder.bind(items[position])
     }
 
     override fun getItemCount() = items.size
+
+    // Update the items list
+    fun updateItems(newItems: List<Pair<Item, Int>>) {
+        items = newItems
+        notifyDataSetChanged() // Refresh the RecyclerView
+    }
 }
