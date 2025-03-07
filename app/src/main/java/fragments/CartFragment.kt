@@ -22,6 +22,7 @@ import utility.CartAdapter
 import utility.CartViewModel
 import utility.ItemAdapter
 import utility.Order
+import utility.OrderItem
 
 class CartFragment : Fragment() {
 
@@ -85,6 +86,9 @@ class CartFragment : Fragment() {
     private fun navigateToLoginFragment() {
         (activity as? MainActivity)?.loadFragment(LoginFragment())
     }
+    private fun navigateToMyOrdersFragment() {
+        (activity as? MainActivity)?.loadFragment(MyOrdersFragment())
+    }
     private fun proceedToCheckout() {
         getCurrentUserEmail { email ->
             if (email == null) {
@@ -96,20 +100,28 @@ class CartFragment : Fragment() {
             val cartItems = cartViewModel.cartItems.value ?: emptyList()
             val totalPrice = cartItems.sumOf { it.first.price * it.second }
 
+            // Convert List<Pair<Item, Int>> to List<OrderItem>
+            //This is a problem I ran through with firebase regarding de-serializing a Pair
+            // DataClass OrderItem was created to solve it
+            val orderItems = cartItems.map { (item, quantity) ->
+                OrderItem(item = item, quantity = quantity)
+            }
+
             // Create an Order object
             val order = Order(
                 userId = email, // Use the user's email instead of uid
-                items = cartItems,
+                items = orderItems,
                 totalPrice = totalPrice,
-                timestamp = System.currentTimeMillis()
+                timestamp = System.currentTimeMillis(),
+                isReady=false,
+                isShipped=false,
+                isDelivered = false
             )
 
             sendOrderToFirestore(order)
+            navigateToMyOrdersFragment()
+
         }
-    }
-    private fun getCurrentUserId(): String? {
-        val firebaseUser = FirebaseAuth.getInstance().currentUser
-        return firebaseUser?.uid
     }
     private fun getCurrentUserEmail(callback: (String?) -> Unit) {
         val firebaseUser = FirebaseAuth.getInstance().currentUser
@@ -125,10 +137,14 @@ class CartFragment : Fragment() {
         val ordersCollection = db.collection("Orders")
         val orderData = hashMapOf(
             "userId" to order.userId,
-            "items" to order.items.map { it.first.name to it.second }, // Convert items to a map of itemId to quantity
+            "items" to order.items.map { mapOf("name" to it.item.name, "quantity" to it.quantity) },
             "totalPrice" to order.totalPrice,
-            "timestamp" to order.timestamp
+            "timestamp" to order.timestamp,
+            "isReady" to order.isReady,
+            "isShipped" to order.isShipped,
+            "isDelivered" to order.isDelivered
         )
+
 
         // Add the order to Firestore
         ordersCollection.add(orderData)
