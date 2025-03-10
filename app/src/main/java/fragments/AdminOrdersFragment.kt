@@ -50,7 +50,7 @@ class AdminOrdersFragment : Fragment() {
                 for (document in documents) {
                     try {
                         val order = document.toObject(Order::class.java)
-                        order.orderId = document.id // ✅ Explicitly set the Order ID from Firestore
+                        order.orderId = document.id
                         orderList.add(order)
                     } catch (e: Exception) {
                         Log.e("AdminOrders", "Error parsing order: ${e.message}")

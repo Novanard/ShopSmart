@@ -39,11 +39,26 @@ class CartFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Check if the user is logged in
         if (!userIsLoggedIn()) {
             navigateToLoginFragment()
             return
         }
 
+        // Check if the user is an admin
+        checkIfUserIsAdmin { isAdmin ->
+            if (isAdmin) {
+                // Redirect admin users to the AdminPanelFragment
+                (activity as? MainActivity)?.loadFragment(AdminPageFragment())
+                return@checkIfUserIsAdmin
+            }
+
+            // Proceed with the cart functionality for non-admin users
+            setupCart(view)
+        }
+    }
+
+    private fun setupCart(view: View) {
         cartRecyclerView = view.findViewById(R.id.cartRecyclerView)
         cartTotalPriceTextView = view.findViewById(R.id.cartTotalPrice)
 
@@ -169,6 +184,20 @@ class CartFragment : Fragment() {
             .addOnFailureListener { e ->
                 Log.e("CartFragment", "Error sending order to Firestore", e)
                 Toast.makeText(requireContext(), "Failed to place order. Please try again.", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun checkIfUserIsAdmin(callback: (Boolean) -> Unit) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return callback(false)
+        val db = FirebaseFirestore.getInstance()
+
+        db.collection("users").document(userId).get()
+            .addOnSuccessListener { document ->
+                val role = document.getString("role") ?: "user"
+                callback(role == "admin")
+            }
+            .addOnFailureListener {
+                callback(false)
             }
     }
 }

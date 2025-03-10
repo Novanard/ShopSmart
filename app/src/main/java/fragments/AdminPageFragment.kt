@@ -8,6 +8,7 @@ import android.widget.Button
 import androidx.fragment.app.Fragment
 import com.example.shopsmart.MainActivity
 import com.example.shopsmart.R
+import com.google.firebase.auth.FirebaseAuth
 
 class AdminPageFragment : Fragment() {
 
@@ -22,9 +23,24 @@ class AdminPageFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val btnViewOrders: Button = view.findViewById(R.id.btnViewOrders)
+        val btnAddProduct: Button = view.findViewById(R.id.btnAddProduct)
+        val btnLogOut: Button = view.findViewById(R.id.btnLogOut)
 
         btnViewOrders.setOnClickListener {
-            (activity as? MainActivity)?.loadFragment(AdminOrdersFragment()) // ✅ Open orders
+            (activity as? MainActivity)?.loadFragment(AdminOrdersFragment())
+        }
+
+        btnLogOut.setOnClickListener {
+            // Log out the user
+            FirebaseAuth.getInstance().signOut()
+
+            // Navigate back to the login screen or another appropriate screen
+            (activity as? MainActivity)?.loadFragment(LoginFragment())
+        }
+
+        // Add Product button (leave as is for now)
+        btnAddProduct.setOnClickListener {
+            (activity as? MainActivity)?.loadFragment(FragmentAddProduct())
         }
     }
 }
