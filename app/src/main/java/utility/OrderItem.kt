@@ -1,7 +1,6 @@
 package utility
 
 data class OrderItem(
-    val item: Item = Item(),
-    val quantity: Int = 0
+    var item: Item = Item(),
+    var quantity: Int = 0
 )
-

@@ -135,9 +135,22 @@ class CartFragment : Fragment() {
     private fun sendOrderToFirestore(order: Order) {
         val db = FirebaseFirestore.getInstance()
         val ordersCollection = db.collection("Orders")
+
         val orderData = hashMapOf(
             "userId" to order.userId,
-            "items" to order.items.map { mapOf("name" to it.item.name, "quantity" to it.quantity) },
+            "items" to order.items.map {
+                mapOf(
+                    "item" to hashMapOf(
+                        "name" to it.item.name,
+                        "price" to it.item.price,
+                        "quantity" to it.item.quantity,
+                        "timesSold" to it.item.timesSold,
+                        "department" to it.item.department,
+                        "imageName" to it.item.imageName
+                    ),
+                    "quantity" to it.quantity
+                )
+            },
             "totalPrice" to order.totalPrice,
             "timestamp" to order.timestamp,
             "isReady" to order.isReady,
@@ -145,8 +158,6 @@ class CartFragment : Fragment() {
             "isDelivered" to order.isDelivered
         )
 
-
-        // Add the order to Firestore
         ordersCollection.add(orderData)
             .addOnSuccessListener { documentReference ->
                 Log.d("CartFragment", "Order sent to Firestore with ID: ${documentReference.id}")

@@ -39,23 +39,28 @@ class MyOrdersFragment : Fragment() {
     }
 
     private fun fetchUserOrders() {
-        val userId = FirebaseAuth.getInstance().currentUser?.email
-        if (userId == null) {
-            Log.e("MyOrdersFragment", "User is not logged in")
-            return
-        }
-
-        Log.d("MyOrdersFragment", "Fetching orders for user: $userId")
+        val userId = FirebaseAuth.getInstance().currentUser?.email ?: return
 
         val db = FirebaseFirestore.getInstance()
         db.collection("Orders")
-            .whereEqualTo("userId", userId) // Fetch orders for the current user
+            .whereEqualTo("userId", userId)
             .get()
             .addOnSuccessListener { documents ->
                 if (documents.isEmpty) {
                     Log.d("MyOrdersFragment", "No orders found for user: $userId")
                 } else {
-                    val orders = documents.toObjects(Order::class.java)
+                    val orders = mutableListOf<Order>()
+                    for (document in documents) {
+                        val order = document.toObject(Order::class.java)
+
+                        // ✅ Manually extract booleans
+                        order.isReady = document.getBoolean("isReady") ?: false
+                        order.isShipped = document.getBoolean("isShipped") ?: false
+                        order.isDelivered = document.getBoolean("isDelivered") ?: false
+
+                        order.orderId = document.id // ✅ Assign Firestore document ID
+                        orders.add(order)
+                    }
                     Log.d("MyOrdersFragment", "Fetched ${orders.size} orders: $orders")
                     orderAdapter.updateOrders(orders)
                 }
