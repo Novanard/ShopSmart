@@ -8,6 +8,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import fragments.CartFragment
 import fragments.HomePageFragment
 import fragments.ShopFragment
+import fragments.UserProfileFragment
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,6 +27,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_home -> loadFragment(HomePageFragment())
                 R.id.nav_search -> loadFragment(ShopFragment())
                 R.id.nav_cart -> loadFragment(CartFragment())
+                R.id.nav_profile-> loadFragment(UserProfileFragment())
             }
             fun getFragmentName(itemId: Int): String {
                 return when (itemId) {

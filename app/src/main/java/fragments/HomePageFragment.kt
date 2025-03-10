@@ -25,16 +25,11 @@ class HomePageFragment : Fragment() {
         findViews(view)
         val user = FirebaseAuth.getInstance().currentUser
         shopNowButton.setOnClickListener {
-            if (user != null) {
-                // User is logged in, go directly to ShopFragment
-                (activity as? MainActivity)?.loadFragment(LoginFragment())
-            } else {
-                // User is NOT logged in, go to LoginFragment
-                (activity as? MainActivity)?.loadFragment(LoginFragment())
-            }
+            (activity as? MainActivity)?.loadFragment(ShopFragment())
         }
     }
-    private fun findViews(view: View) {
-        shopNowButton = view.findViewById(R.id.shopNowButton)
+     private   fun findViews(view: View) {
+            shopNowButton = view.findViewById(R.id.shopNowButton)
+        }
     }
-}
+
