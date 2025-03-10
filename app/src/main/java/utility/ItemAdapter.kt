@@ -9,6 +9,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.shopsmart.R
 
 class ItemAdapter(
@@ -34,7 +35,12 @@ class ItemAdapter(
         notifyDataSetChanged()  // Notify RecyclerView to refresh
     }
 
-    class ItemViewHolder(itemView: View, private val isInCartFragment: Boolean, private val onAddToCartClicked: ((Item, Int) -> Unit)?) : RecyclerView.ViewHolder(itemView) {
+    class ItemViewHolder(
+        itemView: View,
+        private val isInCartFragment: Boolean,
+        private val onAddToCartClicked: ((Item, Int) -> Unit)?
+    ) : RecyclerView.ViewHolder(itemView) {
+
         private val nameTextView: TextView = itemView.findViewById(R.id.itemName)
         private val priceTextView: TextView = itemView.findViewById(R.id.itemPrice)
         private val quantityTextView: TextView = itemView.findViewById(R.id.itemQuantity)
@@ -50,12 +56,11 @@ class ItemAdapter(
             quantityTextView.text = "Quantity: ${cartItem.second}"
 
             val context = itemView.context
-            val resId = context.resources.getIdentifier(cartItem.first.imageName, "drawable", context.packageName)
-            if (resId != 0) {
-                itemImageView.setImageResource(resId)
-            } else {
-                itemImageView.setImageResource(R.drawable.shopsmart_transparent)  // Default placeholder
-            }
+            Glide.with(context)
+                .load(cartItem.first.imageName) // Assuming it's a URL
+                .placeholder(R.drawable.shopsmart_transparent) // Placeholder image
+                .error(R.drawable.shopsmart_transparent) // Fallback image if load fails
+                .into(itemImageView)
 
             // If we are in the CartFragment, we don't show quantity input and add to cart button
             if (isInCartFragment) {
@@ -77,10 +82,3 @@ class ItemAdapter(
         }
     }
 }
-
-
-
-
-
-
-

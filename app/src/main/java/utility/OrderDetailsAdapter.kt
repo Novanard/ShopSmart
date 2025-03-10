@@ -1,4 +1,0 @@
-package utility
-
-class OrderDetailsAdapter {
-}

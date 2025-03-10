@@ -41,7 +41,7 @@ dependencies {
     implementation(libs.firebase.analytics.ktx) // Firebase Analytics
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.firestore.ktx)
-
+    implementation(libs.glide)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

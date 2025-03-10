@@ -1,4 +1,5 @@
 package utility
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -6,6 +7,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.shopsmart.R
 
 class CartAdapter(
@@ -26,14 +28,13 @@ class CartAdapter(
             itemPrice.text = "Price: $${item.first.price}"
             itemQuantity.text = "Qty: ${item.second}"
 
-            // Load product image
+            // Load product image using Glide
             val context = itemView.context
-            val resId = context.resources.getIdentifier(item.first.imageName, "drawable", context.packageName)
-            if (resId != 0) {
-                itemImage.setImageResource(resId)
-            } else {
-                itemImage.setImageResource(R.drawable.shopsmart_transparent) // Default placeholder
-            }
+            Glide.with(context)
+                .load(item.first.imageName) // Assuming it's a URL
+                .placeholder(R.drawable.shopsmart_transparent) // Placeholder
+                .error(R.drawable.shopsmart_transparent) // Fallback
+                .into(itemImage)
 
             // Handle delete button click
             deleteButton.setOnClickListener {
