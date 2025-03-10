@@ -5,10 +5,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.shopsmart.MainActivity
 import com.example.shopsmart.R
 import com.google.firebase.firestore.FirebaseFirestore
 import utility.ItemAdapter
@@ -21,6 +24,7 @@ class OrderDetailsFragment : Fragment() {
     private lateinit var orderTotal: TextView
     private lateinit var orderStatus: TextView
     private lateinit var orderTimestamp: TextView
+    private lateinit var btnBackToOrders: Button
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_order_details, container, false)
@@ -45,9 +49,13 @@ class OrderDetailsFragment : Fragment() {
         orderTotal = view.findViewById(R.id.orderTotal)
         orderStatus = view.findViewById(R.id.orderStatus)
         orderTimestamp = view.findViewById(R.id.orderTimestamp)
+        btnBackToOrders= view.findViewById(R.id.btnBackToMyOrders)
 
         // Fetch order details
         fetchOrderDetails()
+        btnBackToOrders.setOnClickListener{
+            (activity as? MainActivity)?.loadFragment(MyOrdersFragment())
+        }
     }
 
     private fun fetchOrderDetails() {
@@ -77,7 +85,7 @@ class OrderDetailsFragment : Fragment() {
         val orderAdapter = ItemAdapter(orderItemsList, true)
 
         orderItemsRecyclerView.adapter = orderAdapter
-        orderItemsRecyclerView.layoutManager = LinearLayoutManager(context)
+        orderItemsRecyclerView.layoutManager = GridLayoutManager(context,2)
     }
 
 }
