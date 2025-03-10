@@ -1,6 +1,5 @@
 package utility
 
-
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +9,8 @@ import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopsmart.R
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import fragments.OrderDetailsFragment
 import java.text.SimpleDateFormat
 import java.util.*
@@ -33,7 +34,7 @@ class OrderAdapter(private var orders: List<Order>) : RecyclerView.Adapter<Order
         val order = orders[position]
 
         // Set Order Details
-        holder.orderId.text = "Order ID: ${order.orderId}" // Assuming orderId exists
+        holder.orderId.text = "Order ID: ${order.orderId}"
         holder.orderTotal.text = "Total: $${order.totalPrice}"
         holder.orderTimestamp.text = "Date: ${formatTimestamp(order.timestamp)}"
         holder.orderStatus.text = "Status: ${buildOrderStatus(order)}"
@@ -42,15 +43,7 @@ class OrderAdapter(private var orders: List<Order>) : RecyclerView.Adapter<Order
         holder.btnViewOrder.setOnClickListener {
             val activity = holder.itemView.context as? FragmentActivity
             if (activity != null) {
-                val fragment = OrderDetailsFragment()
-                val bundle = Bundle()
-                bundle.putString("orderId", order.orderId) // Pass only orderId
-                fragment.arguments = bundle
-
-                activity.supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
-                    .addToBackStack(null)
-                    .commit()
+                checkUserRoleAndOpenFragment(activity, order.orderId)
             }
         }
     }
@@ -74,5 +67,33 @@ class OrderAdapter(private var orders: List<Order>) : RecyclerView.Adapter<Order
     private fun formatTimestamp(timestamp: Long): String {
         val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
         return sdf.format(Date(timestamp))
+    }
+
+
+    private fun checkUserRoleAndOpenFragment(activity: FragmentActivity, orderId: String) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val db = FirebaseFirestore.getInstance()
+
+        db.collection("users").document(userId).get()
+            .addOnSuccessListener { document ->
+                val role = document.getString("role") ?: "user" // Default to "user"
+                openOrderDetailsFragment(activity, orderId, role)
+            }
+            .addOnFailureListener {
+                openOrderDetailsFragment(activity, orderId, "user") // Default to user view on failure
+            }
+    }
+
+    private fun openOrderDetailsFragment(activity: FragmentActivity, orderId: String, role: String) {
+        val fragment = OrderDetailsFragment()
+        val bundle = Bundle()
+        bundle.putString("orderId", orderId)
+        bundle.putString("role", role)
+        fragment.arguments = bundle
+
+        activity.supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 }

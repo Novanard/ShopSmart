@@ -24,7 +24,7 @@ class AdminPageFragment : Fragment() {
         val btnViewOrders: Button = view.findViewById(R.id.btnViewOrders)
 
         btnViewOrders.setOnClickListener {
-            (activity as? MainActivity)?.loadFragment(AdminOrdersFragment())
+            (activity as? MainActivity)?.loadFragment(AdminOrdersFragment()) // ✅ Open orders
         }
     }
 }

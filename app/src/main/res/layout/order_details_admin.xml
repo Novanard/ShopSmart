@@ -18,7 +18,7 @@
         android:id="@+id/orderStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Status: Processing"
+        android:text="@string/status_processing"
         android:textSize="16sp"
         android:textColor="@color/primary"
         app:layout_constraintTop_toBottomOf="@id/orderTotal"
@@ -43,15 +43,43 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginTop="16dp" />
+    <LinearLayout
+        android:id="@+id/orderBtnsLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/orderTimestamp"
+        app:layout_constraintStart_toStartOf="parent">
     <Button
-        android:id="@+id/btnBackToMyOrders"
+        android:id="@+id/btnOrderReady"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/primary"
-        app:layout_constraintTop_toBottomOf="@id/orderTimestamp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:text="@string/back_to_my_orders"/>
+        android:text="@string/mark_ready"
+        android:layout_weight="1"/>
+    <Button
+        android:id="@+id/btnOrderShipped"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/primary"
+        android:text="@string/mark_shipped"
+        android:layout_weight="1"/>
+        <Button
+            android:id="@+id/btnOrderDelivered"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/primary"
+            android:text="@string/mark_shipped"
+            android:layout_weight="1"/>
+    </LinearLayout>
+        <Button
+            android:id="@+id/btnBackToMyOrders"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/primary"
+            android:text="Back To Admin View Orders"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/orderBtnsLayout"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
 
 

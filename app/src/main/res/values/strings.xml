@@ -18,4 +18,9 @@
     <string name="my_cart">My Cart</string>
     <string name="checkout">Checkout</string>
     <string name="back_to_my_orders">Back To My Orders</string>
+    <string name="mark_ready">Mark Ready</string>
+    <string name="mark_shipped">Mark Shipped</string>
+    <string name="status_processing">Status: Processing</string>
+    <string name="log_out">Log Out</string>
+    <string name="add_product">Add Product</string>
 </resources>

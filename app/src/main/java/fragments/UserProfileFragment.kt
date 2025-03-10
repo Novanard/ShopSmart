@@ -37,73 +37,80 @@ class UserProfileFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_user_profile, container, false)
-
         auth = FirebaseAuth.getInstance()
-        storage = FirebaseStorage.getInstance()
-        storageRef = storage.reference
-
-        val profileImage: ImageView = view.findViewById(R.id.profileImage)
-        val userName: TextView = view.findViewById(R.id.userName)
-        val myOrdersButton: Button = view.findViewById(R.id.btnMyOrders)
-        val uploadPhotoButton: Button = view.findViewById(R.id.btnUploadPhoto)
-        val logoutButton: Button = view.findViewById(R.id.btnLogout)
-
-        val user = auth.currentUser
-        userName.text = user?.displayName ?: "User"
-
-        val imageUrl = user?.photoUrl
-        Log.d("UserProfile", "Loaded user profile URL: $imageUrl")
-
-        if (imageUrl != null) {
-            Glide.with(requireContext())
-                .load(imageUrl)
-                .placeholder(R.drawable.blank_profile_img)
-                .into(profileImage)
-        } else {
-            profileImage.setImageResource(R.drawable.blank_profile_img)
-        }
-
-        myOrdersButton.setOnClickListener {
-            (activity as? MainActivity)?.loadFragment(MyOrdersFragment())
-        }
-
-        uploadPhotoButton.setOnClickListener {
-            openImagePicker()
-        }
-
-        logoutButton.setOnClickListener {
-            logoutUser()
-        }
-
-        checkUserRole()
-
-        return view
-    }
-
-
-    private fun checkUserRole() {
-        val userId = auth.currentUser?.uid ?: return
+        val userId = auth.currentUser?.uid ?: return inflater.inflate(R.layout.fragment_user_profile, container, false)
 
         db.collection("users").document(userId).get()
             .addOnSuccessListener { document ->
-                if (document.exists()) {
-                    val role = document.getString("role") ?: "undefined"
-                    Log.d("UserProfile", "Retrieved user role: $role")  // Log the actual value
+                val role = document.getString("role")?.trim()?.lowercase() ?: "user"
+                Log.d("UserProfile", "User role retrieved: $role")
 
-                    if (role.trim().lowercase() == "admin") {  // Ensure no whitespace issues
-                        Log.d("UserProfile", "User is admin, redirecting to AdminPageFragment")
-                        (activity as? MainActivity)?.loadFragment(AdminPageFragment())
+                requireActivity().runOnUiThread {
+                    if (role == "admin") {
+                        parentFragmentManager.beginTransaction()
+                            .replace(R.id.fragment_container, AdminPageFragment()) // ✅ Fully replace the fragment
+                            .commit()
                     } else {
-                        Log.d("UserProfile", "User is NOT admin, staying on profile page")
+                        // ✅ If user, just load the normal profile view
+                        val view = inflater.inflate(R.layout.fragment_user_profile, container, false)
+                        setupUI(view, "user")
+                        container?.removeAllViews()
+                        container?.addView(view)
                     }
-                } else {
-                    Log.e("UserProfile", "User document does not exist!")
                 }
             }
-            .addOnFailureListener { exception ->
-                Log.e("UserProfile", "Error fetching user role: ${exception.message}")
+            .addOnFailureListener {
+                Log.e("UserProfile", "Failed to fetch user role, defaulting to user profile.")
+                requireActivity().runOnUiThread {
+                    val view = inflater.inflate(R.layout.fragment_user_profile, container, false)
+                    setupUI(view, "user")
+                    container?.removeAllViews()
+                    container?.addView(view)
+                }
             }
+
+        return null
+    }
+
+
+    private fun setupUI(view: View, role: String) {
+        if (role == "admin") {
+            val btnViewOrders = view.findViewById<Button>(R.id.btnViewOrders)
+            btnViewOrders.setOnClickListener {
+                (activity as? MainActivity)?.loadFragment(AdminOrdersFragment())
+            }
+        } else {
+            val profileImage = view.findViewById<ImageView>(R.id.profileImage)
+            val userName = view.findViewById<TextView>(R.id.userName)
+            val myOrdersButton = view.findViewById<Button>(R.id.btnMyOrders)
+            val uploadPhotoButton = view.findViewById<Button>(R.id.btnUploadPhoto)
+            val logoutButton = view.findViewById<Button>(R.id.btnLogout)
+
+            val user = auth.currentUser
+            userName.text = user?.displayName ?: "User"
+
+            val imageUrl = user?.photoUrl
+            if (imageUrl != null) {
+                Glide.with(requireContext())
+                    .load(imageUrl)
+                    .placeholder(R.drawable.blank_profile_img)
+                    .into(profileImage)
+            } else {
+                profileImage.setImageResource(R.drawable.blank_profile_img)
+            }
+
+            myOrdersButton.setOnClickListener {
+                (activity as? MainActivity)?.loadFragment(MyOrdersFragment())
+            }
+
+            uploadPhotoButton.setOnClickListener {
+                openImagePicker()
+            }
+
+            logoutButton.setOnClickListener {
+                logoutUser()
+            }
+        }
     }
 
     private fun openImagePicker() {
@@ -127,10 +134,7 @@ class UserProfileFragment : Fragment() {
     private fun uploadProfileImageToFirebase() {
         if (imageUri != null) {
             val userId = auth.currentUser?.uid
-            Log.d("UserProfile", "Uploading image for userId: $userId")
-
             if (userId == null) {
-                Log.e("UserProfile", "User is not authenticated!")
                 Toast.makeText(requireContext(), "User is not authenticated!", Toast.LENGTH_SHORT).show()
                 return
             }
@@ -138,13 +142,9 @@ class UserProfileFragment : Fragment() {
             val fileName = UUID.randomUUID().toString()
             val imageRef = storageRef.child("profile_pictures/$userId/$fileName")
 
-            Log.d("UserProfile", "Uploading image to path: profile_pictures/$userId/$fileName")
-
             imageRef.putFile(imageUri!!)
                 .addOnSuccessListener {
                     imageRef.downloadUrl.addOnSuccessListener { uri ->
-                        Log.d("UserProfile", "Image uploaded successfully. Image URL: $uri")
-
                         val user = auth.currentUser
                         val profileUpdates = userProfileChangeRequest {
                             photoUri = uri
@@ -153,21 +153,18 @@ class UserProfileFragment : Fragment() {
                         user?.updateProfile(profileUpdates)
                             ?.addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
-                                    Log.d("UserProfile", "Profile photo updated successfully")
                                     Toast.makeText(requireContext(), "Profile photo updated!", Toast.LENGTH_SHORT).show()
                                     Glide.with(requireContext())
                                         .load(uri)
                                         .into(requireView().findViewById(R.id.profileImage))
                                 } else {
-                                    Log.e("UserProfile", "Failed to update profile photo: ${task.exception?.message}")
                                     Toast.makeText(requireContext(), "Failed to update profile photo!", Toast.LENGTH_SHORT).show()
                                 }
                             }
                     }
                 }
-                .addOnFailureListener { exception ->
-                    Log.e("UserProfile", "Error uploading profile image: ${exception.message}")
-                    Toast.makeText(requireContext(), "Error uploading image: ${exception.message}", Toast.LENGTH_SHORT).show()
+                .addOnFailureListener {
+                    Toast.makeText(requireContext(), "Error uploading image!", Toast.LENGTH_SHORT).show()
                 }
         } else {
             Toast.makeText(requireContext(), "No image selected!", Toast.LENGTH_SHORT).show()
@@ -176,7 +173,6 @@ class UserProfileFragment : Fragment() {
 
     private fun logoutUser() {
         auth.signOut()
-        Log.d("UserProfile", "User logged out successfully")
         Toast.makeText(requireContext(), "Logged out successfully!", Toast.LENGTH_SHORT).show()
         (activity as? MainActivity)?.loadFragment(LoginFragment())
     }
