@@ -7,12 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopsmart.MainActivity
 import com.example.shopsmart.R
@@ -20,7 +20,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import utility.CartAdapter
 import utility.CartViewModel
-import utility.ItemAdapter
 import utility.Order
 import utility.OrderItem
 
@@ -29,6 +28,7 @@ class CartFragment : Fragment() {
     private lateinit var cartRecyclerView: RecyclerView
     private lateinit var cartAdapter: CartAdapter
     private lateinit var cartViewModel: CartViewModel
+    private lateinit var cartTotalPriceTextView: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -39,35 +39,39 @@ class CartFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Check if the user is logged in
         if (!userIsLoggedIn()) {
-            // Redirect to LoginFragment if the user is not logged in
             navigateToLoginFragment()
             return
         }
 
-        // Initialize RecyclerView and Adapter
         cartRecyclerView = view.findViewById(R.id.cartRecyclerView)
+        cartTotalPriceTextView = view.findViewById(R.id.cartTotalPrice)
+
         cartAdapter = CartAdapter(emptyList()) { item ->
             cartViewModel.removeItemFromCart(item)
+            updateTotalCartPrice()
         }
         cartRecyclerView.adapter = cartAdapter
         cartRecyclerView.layoutManager = GridLayoutManager(context, 2)
 
-        // Initialize CartViewModel
         cartViewModel = ViewModelProvider(requireActivity()).get(CartViewModel::class.java)
 
-        // Observe cartItems LiveData
         cartViewModel.cartItems.observe(viewLifecycleOwner, Observer { cartItems ->
             cartAdapter.updateItems(cartItems)
+            updateTotalCartPrice()
         })
 
-        // Initialize Checkout Button and set click listener
         val checkoutButton = view.findViewById<Button>(R.id.checkoutButton)
         checkoutButton.setOnClickListener {
-            initiateCheckout() // Call the checkout function when the button is clicked
+            initiateCheckout()
         }
     }
+
+    private fun updateTotalCartPrice() {
+        val totalPrice = cartViewModel.cartItems.value?.sumOf { it.first.price * it.second } ?: 0.0
+        cartTotalPriceTextView.text = "Total Cart: $${String.format("%.2f", totalPrice)}"
+    }
+
     private fun initiateCheckout() {
         if (userIsLoggedIn()) {
             Log.d("CartFragment", "User is logged in, proceeding to checkout")
@@ -86,9 +90,11 @@ class CartFragment : Fragment() {
     private fun navigateToLoginFragment() {
         (activity as? MainActivity)?.loadFragment(LoginFragment())
     }
+
     private fun navigateToMyOrdersFragment() {
         (activity as? MainActivity)?.loadFragment(MyOrdersFragment())
     }
+
     private fun proceedToCheckout() {
         getCurrentUserEmail { email ->
             if (email == null) {
@@ -100,38 +106,34 @@ class CartFragment : Fragment() {
             val cartItems = cartViewModel.cartItems.value ?: emptyList()
             val totalPrice = cartItems.sumOf { it.first.price * it.second }
 
-            // Convert List<Pair<Item, Int>> to List<OrderItem>
-            //This is a problem I ran through with firebase regarding de-serializing a Pair
-            // DataClass OrderItem was created to solve it
             val orderItems = cartItems.map { (item, quantity) ->
                 OrderItem(item = item, quantity = quantity)
             }
 
-            // Create an Order object
             val order = Order(
-                userId = email, // Use the user's email instead of uid
+                userId = email,
                 items = orderItems,
                 totalPrice = totalPrice,
                 timestamp = System.currentTimeMillis(),
-                isReady=false,
-                isShipped=false,
+                isReady = false,
+                isShipped = false,
                 isDelivered = false
             )
 
             sendOrderToFirestore(order)
             navigateToMyOrdersFragment()
-
         }
     }
+
     private fun getCurrentUserEmail(callback: (String?) -> Unit) {
         val firebaseUser = FirebaseAuth.getInstance().currentUser
         if (firebaseUser == null) {
-            callback(null) // User is not authenticated
+            callback(null)
             return
         }
-        val email = firebaseUser.email
-        callback(email)
+        callback(firebaseUser.email)
     }
+
     private fun sendOrderToFirestore(order: Order) {
         val db = FirebaseFirestore.getInstance()
         val ordersCollection = db.collection("Orders")
@@ -168,17 +170,5 @@ class CartFragment : Fragment() {
                 Log.e("CartFragment", "Error sending order to Firestore", e)
                 Toast.makeText(requireContext(), "Failed to place order. Please try again.", Toast.LENGTH_SHORT).show()
             }
-
     }
 }
-
-
-
-
-
-
-
-
-
-
-

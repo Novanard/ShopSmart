@@ -1,6 +1,9 @@
 package utility
 
-import android.util.Log
+import android.graphics.Typeface
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,16 +17,15 @@ import com.example.shopsmart.R
 
 class ItemAdapter(
     private var items: List<Pair<Item, Int>>,
-    private val isInOrderDetailsFragment: Boolean,  // To check if we are in OrderDetailsFragment
-    private val onAddToCartClicked: ((Item, Int) -> Unit)? = null  // Lambda for ShopFragment
+    private val isInOrderDetailsFragment: Boolean,
+    private val onAddToCartClicked: ((Item, Int) -> Unit)? = null
 ) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        // Inflate different layout depending on the fragment
         val layoutRes = if (isInOrderDetailsFragment) {
-            R.layout.item_layout_order_details  // Layout with Price, Quantity, and Total for OrderDetailsFragment
+            R.layout.item_layout_order_details  // Layout for OrderDetailsFragment
         } else {
-            R.layout.item_layout  // Regular layout for ShopFragment
+            R.layout.item_layout  // Layout for ShopFragment
         }
 
         val view = LayoutInflater.from(parent.context).inflate(layoutRes, parent, false)
@@ -31,15 +33,14 @@ class ItemAdapter(
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        val item = items[position]
-        holder.bind(item)
+        holder.bind(items[position])
     }
 
     override fun getItemCount() = items.size
 
     fun updateItems(newItems: List<Pair<Item, Int>>) {
         items = newItems
-        notifyDataSetChanged()  // Refresh RecyclerView
+        notifyDataSetChanged()
     }
 
     class ItemViewHolder(
@@ -52,37 +53,49 @@ class ItemAdapter(
         private val priceTextView: TextView = itemView.findViewById(R.id.itemPrice)
         private val quantityTextView: TextView = itemView.findViewById(R.id.itemQuantity)
         private val itemImageView: ImageView = itemView.findViewById(R.id.itemImage)
-        private val totalTextView: TextView? = itemView.findViewById(R.id.itemTotal) // Will be used only in OrderDetailsFragment
+        private val totalTextView: TextView? = itemView.findViewById(R.id.itemTotal) // Used in OrderDetailsFragment
 
         fun bind(cartItem: Pair<Item, Int>) {
-            nameTextView.text = cartItem.first.name
-            priceTextView.text = "Price: $${cartItem.first.price}"
-            quantityTextView.text = "Qty: ${cartItem.second}"
+            val item = cartItem.first
+            val quantity = cartItem.second
 
-            // Load image using Glide or similar
+            nameTextView.text = item.name
+            priceTextView.text = boldText("Price: ", "$${item.price}")
+            quantityTextView.text = boldText("Qty: ", "$quantity")
+
             Glide.with(itemView.context)
-                .load(cartItem.first.imageName)  // Assuming the image name or URL
+                .load(item.imageName)
                 .placeholder(R.drawable.shopsmart_transparent)
+                .error(R.drawable.shopsmart_transparent)
                 .into(itemImageView)
 
-            // If in OrderDetailsFragment, calculate and display total price
             if (isInOrderDetailsFragment) {
-                val total = cartItem.first.price * cartItem.second
-                totalTextView?.text = "Total: $${total}"  // Show total price only in OrderDetailsFragment
+                val total = item.price * quantity
+                totalTextView?.text = boldText("Total: ", "$${total}")
             }
 
-            // Handle Add to Cart button only in the ShopFragment
             if (!isInOrderDetailsFragment) {
-                itemView.findViewById<Button>(R.id.addToCartButton)?.setOnClickListener {
-                    val quantityText = itemView.findViewById<EditText>(R.id.quantityInput)?.text.toString()
-                    val quantity = quantityText.toIntOrNull() ?: 0
+                val addToCartButton = itemView.findViewById<Button>(R.id.addToCartButton)
+                val quantityInput = itemView.findViewById<EditText>(R.id.quantityInput)
 
-                    if (quantity > 0 && onAddToCartClicked != null) {
-                        onAddToCartClicked?.let { it1 -> it1(cartItem.first, quantity) }
+                addToCartButton?.setOnClickListener {
+                    val quantityText = quantityInput?.text.toString()
+                    val enteredQuantity = quantityText.toIntOrNull() ?: 0
+
+                    if (enteredQuantity > 0 && onAddToCartClicked != null) {
+                        onAddToCartClicked.invoke(item, enteredQuantity)
                     } else {
-                        itemView.findViewById<EditText>(R.id.quantityInput)?.error = "Enter a valid quantity"
+                        quantityInput?.error = "Enter a valid quantity"
                     }
                 }
+            }
+        }
+
+        private fun boldText(boldPart: String, normalPart: String): SpannableStringBuilder {
+            return SpannableStringBuilder().apply {
+                append(boldPart)
+                setSpan(StyleSpan(Typeface.BOLD), 0, boldPart.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                append(normalPart)
             }
         }
     }

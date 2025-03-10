@@ -7,15 +7,20 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import fragments.CartFragment
 import fragments.HomePageFragment
+import fragments.LoginFragment
+import fragments.MyOrdersFragment
 import fragments.ShopFragment
 import fragments.UserProfileFragment
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var bottomNavigationView: BottomNavigationView // 🔥 Declare it at class level
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
+        bottomNavigationView = findViewById(R.id.bottom_navigation) // 🔥 Initialize it here
 
         // Load HomeFragment by default
         if (savedInstanceState == null) {
@@ -23,21 +28,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         bottomNavigationView.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_home -> loadFragment(HomePageFragment())
-                R.id.nav_search -> loadFragment(ShopFragment())
-                R.id.nav_cart -> loadFragment(CartFragment())
-                R.id.nav_profile-> loadFragment(UserProfileFragment())
+            val fragment = when (item.itemId) {
+                R.id.nav_home -> HomePageFragment()
+                R.id.nav_shop -> ShopFragment()
+                R.id.nav_cart -> CartFragment()
+                R.id.nav_profile -> UserProfileFragment()
+                else -> null
             }
-            fun getFragmentName(itemId: Int): String {
-                return when (itemId) {
-                    R.id.nav_home -> "HomeFragment"
-                    R.id.nav_search -> "ShopFragment"
-                    R.id.nav_cart -> "CartFragment"
-                    else -> "Unknown Fragment"
-                }
-            }
-            Log.d("FRAG SWITCH", "Item ID: ${item.itemId}, Fragment: ${getFragmentName(item.itemId)}")
+
+            fragment?.let { loadFragment(it) }
+
+            Log.d("FRAG SWITCH", "Selected Fragment: ${getFragmentName(item.itemId)}")
             true
         }
     }
@@ -48,5 +49,29 @@ class MainActivity : AppCompatActivity() {
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)
             .commit()
+        updateBottomNavSelection(fragment)
+    }
+
+    // Function to update BottomNavigationView selection
+    private fun updateBottomNavSelection(fragment: Fragment) {
+        val menu = bottomNavigationView.menu
+        when (fragment) {
+            is HomePageFragment -> menu.findItem(R.id.nav_home).isChecked = true
+            is ShopFragment -> menu.findItem(R.id.nav_shop).isChecked = true
+            is CartFragment -> menu.findItem(R.id.nav_cart).isChecked = true
+            is UserProfileFragment,is MyOrdersFragment,is LoginFragment-> menu.findItem(R.id.nav_profile).isChecked = true
+
+        }
+    }
+
+    // Function to get fragment name for logging
+    private fun getFragmentName(itemId: Int): String {
+        return when (itemId) {
+            R.id.nav_home -> "HomeFragment"
+            R.id.nav_shop -> "ShopFragment"
+            R.id.nav_cart -> "CartFragment"
+            R.id.nav_profile -> "UserProfileFragment"
+            else -> "Unknown Fragment"
+        }
     }
 }
