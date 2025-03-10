@@ -14,13 +14,20 @@ import com.example.shopsmart.R
 
 class ItemAdapter(
     private var items: List<Pair<Item, Int>>,
-    private val isInCartFragment: Boolean, // Flag to check if we're in CartFragment
-    private val onAddToCartClicked: ((Item, Int) -> Unit)? = null // Optional, only needed in ShopFragment
+    private val isInOrderDetailsFragment: Boolean,  // To check if we are in OrderDetailsFragment
+    private val onAddToCartClicked: ((Item, Int) -> Unit)? = null  // Lambda for ShopFragment
 ) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_layout, parent, false)
-        return ItemViewHolder(view, isInCartFragment, onAddToCartClicked)
+        // Inflate different layout depending on the fragment
+        val layoutRes = if (isInOrderDetailsFragment) {
+            R.layout.item_layout_order_details  // Layout with Price, Quantity, and Total for OrderDetailsFragment
+        } else {
+            R.layout.item_layout  // Regular layout for ShopFragment
+        }
+
+        val view = LayoutInflater.from(parent.context).inflate(layoutRes, parent, false)
+        return ItemViewHolder(view, isInOrderDetailsFragment, onAddToCartClicked)
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
@@ -32,12 +39,12 @@ class ItemAdapter(
 
     fun updateItems(newItems: List<Pair<Item, Int>>) {
         items = newItems
-        notifyDataSetChanged()  // Notify RecyclerView to refresh
+        notifyDataSetChanged()  // Refresh RecyclerView
     }
 
     class ItemViewHolder(
         itemView: View,
-        private val isInCartFragment: Boolean,
+        private val isInOrderDetailsFragment: Boolean,
         private val onAddToCartClicked: ((Item, Int) -> Unit)?
     ) : RecyclerView.ViewHolder(itemView) {
 
@@ -45,37 +52,35 @@ class ItemAdapter(
         private val priceTextView: TextView = itemView.findViewById(R.id.itemPrice)
         private val quantityTextView: TextView = itemView.findViewById(R.id.itemQuantity)
         private val itemImageView: ImageView = itemView.findViewById(R.id.itemImage)
-
-        // These views will only be used in ShopFragment
-        private val quantityInput: EditText = itemView.findViewById(R.id.quantityInput)
-        private val addToCartButton: Button = itemView.findViewById(R.id.addToCartButton)
+        private val totalTextView: TextView? = itemView.findViewById(R.id.itemTotal) // Will be used only in OrderDetailsFragment
 
         fun bind(cartItem: Pair<Item, Int>) {
             nameTextView.text = cartItem.first.name
             priceTextView.text = "Price: $${cartItem.first.price}"
-            quantityTextView.text = "Quantity: ${cartItem.second}"
+            quantityTextView.text = "Qty: ${cartItem.second}"
 
-            val context = itemView.context
-            Glide.with(context)
-                .load(cartItem.first.imageName) // Assuming it's a URL
-                .placeholder(R.drawable.shopsmart_transparent) // Placeholder image
-                .error(R.drawable.shopsmart_transparent) // Fallback image if load fails
+            // Load image using Glide or similar
+            Glide.with(itemView.context)
+                .load(cartItem.first.imageName)  // Assuming the image name or URL
+                .placeholder(R.drawable.shopsmart_transparent)
                 .into(itemImageView)
 
-            // If we are in the CartFragment, we don't show quantity input and add to cart button
-            if (isInCartFragment) {
-                quantityInput.visibility = View.GONE
-                addToCartButton.visibility = View.GONE
-            } else {
-                // If we are in the ShopFragment, show quantity input and add to cart button
-                addToCartButton.setOnClickListener {
-                    val quantityText = quantityInput.text.toString()
+            // If in OrderDetailsFragment, calculate and display total price
+            if (isInOrderDetailsFragment) {
+                val total = cartItem.first.price * cartItem.second
+                totalTextView?.text = "Total: $${total}"  // Show total price only in OrderDetailsFragment
+            }
+
+            // Handle Add to Cart button only in the ShopFragment
+            if (!isInOrderDetailsFragment) {
+                itemView.findViewById<Button>(R.id.addToCartButton)?.setOnClickListener {
+                    val quantityText = itemView.findViewById<EditText>(R.id.quantityInput)?.text.toString()
                     val quantity = quantityText.toIntOrNull() ?: 0
 
                     if (quantity > 0 && onAddToCartClicked != null) {
                         onAddToCartClicked?.let { it1 -> it1(cartItem.first, quantity) }
                     } else {
-                        quantityInput.error = "Enter a valid quantity"
+                        itemView.findViewById<EditText>(R.id.quantityInput)?.error = "Enter a valid quantity"
                     }
                 }
             }

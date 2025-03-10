@@ -30,9 +30,10 @@ class ShopFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_shop, container, false)
 
         itemsRecyclerView = view.findViewById(R.id.itemsRecyclerView)
-        itemAdapter = ItemAdapter(emptyList(), isInCartFragment = false) { item, quantity ->
+        itemAdapter = ItemAdapter(emptyList(), isInOrderDetailsFragment = false) { item, quantity ->
             cartViewModel.addItemToCart(item, quantity)
         }
+
         itemsRecyclerView.adapter = itemAdapter
         itemsRecyclerView.layoutManager = GridLayoutManager(context, 2)
 

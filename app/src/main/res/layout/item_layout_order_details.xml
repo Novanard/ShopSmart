@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp">
+
+
+    <ImageView
+        android:id="@+id/itemImage"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:src="@drawable/shopsmart_transparent"/>
+
+
+    <TextView
+        android:id="@+id/itemName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Item Name"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="@id/itemImage"
+        app:layout_constraintStart_toEndOf="@id/itemImage"
+        android:layout_marginStart="8dp"/>
+
+
+    <TextView
+        android:id="@+id/itemPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Price: $0.00"
+        android:textSize="12sp"
+        app:layout_constraintTop_toBottomOf="@id/itemName"
+        app:layout_constraintStart_toEndOf="@id/itemImage"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="8dp"/>
+
+
+    <TextView
+        android:id="@+id/itemQuantity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Qty: 0"
+        android:textSize="12sp"
+        app:layout_constraintTop_toBottomOf="@id/itemPrice"
+        app:layout_constraintStart_toEndOf="@id/itemImage"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="8dp"/>
+
+
+    <TextView
+        android:id="@+id/itemTotal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Total: $0.00"
+        android:textSize="12sp"
+        app:layout_constraintTop_toTopOf="@id/itemQuantity"
+        app:layout_constraintStart_toEndOf="@id/itemQuantity"
+        android:layout_marginStart="16dp"
+        android:gravity="start"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

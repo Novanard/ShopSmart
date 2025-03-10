@@ -1,6 +1,10 @@
 package fragments
 
+import android.graphics.Typeface
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.StyleSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -75,17 +79,29 @@ class OrderDetailsFragment : Fragment() {
     }
 
     private fun updateUI(order: Order) {
-        orderTotal.text = "Total: $${order.totalPrice}"
-        orderStatus.text = "Status: ${if (order.isDelivered) "Delivered" else "Processing"}"
-        orderTimestamp.text = "Date: ${java.util.Date(order.timestamp)}"
+            // Create a SpannableString to bold a specific part of a string only
+        val totalText = SpannableString("Total: $${order.totalPrice}")
+        totalText.setSpan(StyleSpan(Typeface.BOLD), 0, 6, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        orderTotal.text = totalText
+
+        // Same for Status
+        val statusText = SpannableString("Status: ${if (order.isDelivered) "Delivered" else "Processing"}")
+        statusText.setSpan(StyleSpan(Typeface.BOLD), 0, 7, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        orderStatus.text = statusText
+
+        // Same for Date
+        val dateText = SpannableString("Date: ${java.util.Date(order.timestamp)}")
+        dateText.setSpan(StyleSpan(Typeface.BOLD), 0, 5, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        orderTimestamp.text = dateText
+
 
         // Convert order items to the format used by ItemAdapter
         val orderItemsList = order.items.map { Pair(it.item, it.quantity) }
 
         val orderAdapter = ItemAdapter(orderItemsList, true)
 
+        orderItemsRecyclerView.layoutManager = LinearLayoutManager(context)
         orderItemsRecyclerView.adapter = orderAdapter
-        orderItemsRecyclerView.layoutManager = GridLayoutManager(context,2)
     }
 
 }
