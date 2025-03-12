@@ -1,4 +1,4 @@
-<!-- item_cart.xml -->
+
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -6,7 +6,6 @@
     android:layout_height="wrap_content"
     android:padding="8dp"
     android:layout_margin="4dp">
-    <!-- Product Image -->
     <ImageView
         android:id="@+id/itemImage"
         android:layout_width="120dp"
@@ -18,7 +17,6 @@
         app:layout_constraintEnd_toEndOf="parent"
     />
 
-    <!-- Product Name -->
     <TextView
         android:id="@+id/itemName"
         android:layout_width="0dp"
@@ -33,7 +31,7 @@
         android:layout_marginTop="@dimen/_8dp"
         android:textAlignment="center"/>
 
-    <!-- Product Price -->
+
     <TextView
         android:id="@+id/itemPrice"
         android:layout_width="0dp"
@@ -46,7 +44,6 @@
         android:layout_marginTop="@dimen/_4dp"
         android:textAlignment="center"/>
 
-    <!-- Product Quantity -->
     <TextView
         android:id="@+id/itemQuantity"
         android:layout_width="0dp"
@@ -59,7 +56,6 @@
         android:layout_marginTop="@dimen/_4dp"
         android:textAlignment="center"/>
 
-    <!-- Delete Button -->
     <Button
         android:id="@+id/deleteButton"
         android:layout_width="0dp"

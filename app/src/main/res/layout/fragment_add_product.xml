@@ -8,7 +8,6 @@
     android:background="@color/bg_color">
 
 
-    <!-- Image Upload Section -->
     <ImageView
         android:id="@+id/ivProductImage"
         android:layout_width="150dp"
@@ -23,7 +22,7 @@
         android:id="@+id/etDepartment"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="Department"
+        android:hint="@string/department"
         android:inputType="text"
         app:layout_constraintTop_toBottomOf="@id/btnUploadImage"
         app:layout_constraintStart_toStartOf="parent"
@@ -34,7 +33,7 @@
         android:id="@+id/btnUploadImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Upload Image"
+        android:text="@string/upload_image"
         android:backgroundTint="@color/primary"
         android:textColor="@android:color/white"
         android:padding="12dp"
@@ -43,7 +42,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="20dp"/>
 
-    <!-- Product Name Input -->
     <EditText
         android:id="@+id/etName"
         android:layout_width="0dp"
@@ -55,7 +53,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="20dp"/>
 
-    <!-- Price Input -->
     <EditText
         android:id="@+id/etPrice"
         android:layout_width="0dp"
@@ -67,24 +64,22 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="20dp"/>
 
-    <!-- Quantity Input -->
     <EditText
         android:id="@+id/etQuantity"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="Quantity"
+        android:hint="@string/quantity"
         android:inputType="number"
         app:layout_constraintTop_toBottomOf="@id/etPrice"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="20dp"/>
 
-    <!-- Submit Button -->
     <Button
         android:id="@+id/btnSubmit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add Product"
+        android:text="@string/add_product"
         android:backgroundTint="@color/primary"
         android:textColor="@android:color/white"
         android:padding="12dp"

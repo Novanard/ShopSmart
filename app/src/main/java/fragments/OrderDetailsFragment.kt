@@ -99,9 +99,9 @@ class OrderDetailsFragment : Fragment() {
         db.collection("Orders").document(orderId).get()
             .addOnSuccessListener { document ->
                 if (document.exists()) {
-                    Log.d("OrderDetailsFragment", "Firestore Document: ${document.data}") // ✅ Debugging log
+                    Log.d("OrderDetailsFragment", "Firestore Document: ${document.data}")
 
-                    // ✅ Explicitly force Firestore to map correctly
+
                     val order = document.toObject(Order::class.java)
 
                     if (order != null) {
@@ -128,7 +128,6 @@ class OrderDetailsFragment : Fragment() {
         totalText.setSpan(StyleSpan(Typeface.BOLD), 0, 6, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         orderTotal.text = totalText
 
-        // Status formatting
         Log.d("OrderDetailsFragment", "Updating UI with order: isReady=${order.isReady}, isShipped=${order.isShipped}, isDelivered=${order.isDelivered}")
         val statusText = SpannableString("Status: ${getOrderStatus(order)}")
         statusText.setSpan(StyleSpan(Typeface.BOLD), 0, 7, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)

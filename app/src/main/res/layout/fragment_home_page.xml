@@ -5,7 +5,6 @@
     android:padding="16dp"
     android:background="@color/bg_color">
 
-    <!-- App Logo -->
     <ImageView
         android:id="@+id/appLogo"
         android:layout_width="200dp"
@@ -15,7 +14,7 @@
          app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Welcome Message -->
+
     <TextView
         android:id="@+id/welcomeText"
         android:layout_width="wrap_content"
@@ -29,7 +28,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:paddingTop="12dp" />
 
-    <!-- Shop Now Button -->
     <Button
         android:id="@+id/shopNowButton"
         android:layout_width="200dp"
@@ -44,7 +42,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp" />
 
-    <!-- Featured Products Section -->
     <TextView
         android:id="@+id/featuredTitle"
         android:layout_width="wrap_content"

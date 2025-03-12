@@ -27,4 +27,21 @@
     <string name="admin_control_panel">Admin - Control Panel</string>
     <string name="my_orders">My Orders</string>
     <string name="back_to_profile">Back To Profile</string>
+    <string name="quantity">Quantity</string>
+    <string name="upload_image">Upload Image</string>
+    <string name="department">Department</string>
+    <string name="view_orders">View Orders</string>
+    <string name="back_to_admin_page">Back To Admin Page</string>
+    <string name="total_cart_0_00">Total Cart: $0.00</string>
+    <string name="name">Name</string>
+    <string name="save">Save</string>
+    <string name="don_t_have_an_account_register">Don\'t have an account? Register</string>
+    <string name="login">Login</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
+    <string name="total_0_00">Total: $0.00</string>
+    <string name="date_n_a">Date: N/A</string>
+    <string name="username">Username</string>
+    <string name="register">Register</string>
+    <string name="already_have_an_account_login">Already have an account? Login</string>
 </resources>

@@ -39,7 +39,6 @@ class CartFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Check if the user is logged in
         if (!userIsLoggedIn()) {
             navigateToLoginFragment()
             return
@@ -216,7 +215,6 @@ class CartFragment : Fragment() {
                         val itemDoc = documents.documents[0]
                         val itemRef = itemsCollection.document(itemDoc.id)
 
-                        // Get the current values
                         val currentTimesSold = itemDoc.getLong("timesSold") ?: 0
                         val currentQuantity = itemDoc.getLong("quantity") ?: 0
 

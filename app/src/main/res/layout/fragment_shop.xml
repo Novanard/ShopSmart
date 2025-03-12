@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Department Selection Buttons -->
+
     <LinearLayout
         android:id="@+id/departmentButtonsLayout"
         android:layout_width="0dp"
@@ -23,7 +23,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Vegetables"
+            android:text="@string/vegetables"
             android:textSize="9sp"
             android:backgroundTint="@color/primary"/>
 
@@ -32,7 +32,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Butchery"
+            android:text="@string/butchery"
             android:textSize="9sp"
             android:backgroundTint="@color/primary"/>
 
@@ -41,7 +41,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Bakery"
+            android:text="@string/bakery"
             android:textSize="9sp"
             android:backgroundTint="@color/primary"/>
 
@@ -50,7 +50,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Home Tools"
+            android:text="@string/hometools"
             android:textSize="9sp"
             android:backgroundTint="@color/primary"/>
     </LinearLayout>

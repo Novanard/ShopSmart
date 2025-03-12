@@ -31,14 +31,12 @@ class AdminPageFragment : Fragment() {
         }
 
         btnLogOut.setOnClickListener {
-            // Log out the user
             FirebaseAuth.getInstance().signOut()
 
-            // Navigate back to the login screen or another appropriate screen
+            // Navigate back to the login after logging out
             (activity as? MainActivity)?.loadFragment(LoginFragment())
         }
 
-        // Add Product button (leave as is for now)
         btnAddProduct.setOnClickListener {
             (activity as? MainActivity)?.loadFragment(FragmentAddProduct())
         }

@@ -50,7 +50,7 @@ class LoginFragment : Fragment() {
         registerText.setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, RegisterFragment())
-                .addToBackStack(null) // Allows going back to LoginFragment
+                .addToBackStack(null)
                 .commit()
         }
     }
@@ -73,7 +73,6 @@ class LoginFragment : Fragment() {
     }
     private fun onLoginSuccess() {
         Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()
-        // Redirect to HomePage after successful login
         (activity as? MainActivity)?.loadFragment(HomePageFragment())
     }
 

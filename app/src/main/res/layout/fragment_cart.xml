@@ -31,7 +31,7 @@
         android:id="@+id/cartTotalPrice"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Total Cart: $0.00"
+        android:text="@string/total_cart_0_00"
         android:textSize="18sp"
         android:textStyle="bold"
         android:gravity="center"

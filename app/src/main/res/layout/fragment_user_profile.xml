@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <!-- Profile Image -->
+
     <ImageView
         android:id="@+id/profileImage"
         android:layout_width="100dp"
@@ -41,7 +41,6 @@
         android:layout_marginTop="16dp"
         android:backgroundTint="@color/primary"/>
 
-    <!-- Edit Profile Button -->
     <Button
         android:id="@+id/btnUploadPhoto"
         android:layout_width="0dp"
@@ -53,7 +52,6 @@
         android:layout_marginTop="12dp"
         android:backgroundTint="@color/primary"/>
 
-    <!-- Logout Button -->
     <Button
         android:id="@+id/btnLogout"
         android:layout_width="0dp"

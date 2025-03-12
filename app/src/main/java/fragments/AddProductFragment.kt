@@ -117,13 +117,11 @@ class FragmentAddProduct : Fragment() {
                 db.collection("Items")
                     .add(product)
                     .addOnSuccessListener { documentReference ->
-                        // Debug: Log success
                         println("Product added with ID: ${documentReference.id}")
                         Toast.makeText(requireContext(), "Product added successfully", Toast.LENGTH_SHORT).show()
                         clearForm()
                     }
                     .addOnFailureListener { e ->
-                        // Debug: Log failure
                         println("Error adding product: ${e.message}")
                         Toast.makeText(requireContext(), "Error adding product: ${e.message}", Toast.LENGTH_SHORT).show()
                     }

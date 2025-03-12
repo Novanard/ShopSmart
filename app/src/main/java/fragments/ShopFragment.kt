@@ -53,13 +53,12 @@ class ShopFragment : Fragment() {
         // Load items for default department on start
         loadItemsForDepartment("Vegetables")
 
-        // Find department buttons
         val btnVegetables = view.findViewById<Button>(R.id.btnVegetables)
         val btnButchery = view.findViewById<Button>(R.id.btnButchery)
         val btnBakery = view.findViewById<Button>(R.id.btnBakery)
         val btnHomeTools = view.findViewById<Button>(R.id.btnHomeTools)
 
-        // Set click listeners to load the correct department's items
+
         btnVegetables.setOnClickListener { loadItemsForDepartment("Vegetables") }
         btnButchery.setOnClickListener { loadItemsForDepartment("Butchery") }
         btnBakery.setOnClickListener { loadItemsForDepartment("Bakery") }
