@@ -22,4 +22,9 @@
     <string name="status_processing">Status: Processing</string>
     <string name="log_out">Log Out</string>
     <string name="add_product">Add Product</string>
+    <string name="mark_delivered">Mark Delivered</string>
+    <string name="admin_view_orders">Admin - View Orders</string>
+    <string name="admin_control_panel">Admin - Control Panel</string>
+    <string name="my_orders">My Orders</string>
+    <string name="back_to_profile">Back To Profile</string>
 </resources>

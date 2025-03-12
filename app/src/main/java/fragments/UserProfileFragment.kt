@@ -20,88 +20,90 @@ class UserProfileFragment : Fragment() {
 
     private lateinit var auth: FirebaseAuth
     private val db = FirebaseFirestore.getInstance()
+    private var isAdminRedirected = false  // Prevents UI setup if redirected
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // Initialize Firebase Auth
+        auth = FirebaseAuth.getInstance()
+
+        val userId = auth.currentUser?.uid
+        if (userId != null) {
+            fetchUserRole(userId)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_user_profile, container, false)
-
-        // Initialize Firebase Auth
-        auth = FirebaseAuth.getInstance()
-
-        // Fetch user role and setup UI
-        val userId = auth.currentUser?.uid
-        if (userId != null) {
-            fetchUserRole(userId, view)
+        return if (isAdminRedirected) {
+            null // Prevents inflating the layout if redirected
         } else {
-            setupUI(view, "user") // Default to user role if user is not authenticated
+            inflater.inflate(R.layout.fragment_user_profile, container, false)
         }
-
-        return view
     }
 
-    private fun fetchUserRole(userId: String, view: View) {
+    private fun fetchUserRole(userId: String) {
         db.collection("users").document(userId).get()
             .addOnSuccessListener { document ->
                 val role = document.getString("role")?.trim()?.lowercase() ?: "user"
                 Log.d("UserProfile", "User role retrieved: $role")
 
-                requireActivity().runOnUiThread {
-                    if (role == "admin") {
-                        // Redirect to AdminPageFragment
+                if (role == "admin") {
+                    isAdminRedirected = true
+                    requireActivity().runOnUiThread {
                         (activity as? MainActivity)?.loadFragment(AdminPageFragment())
-                    } else {
-                        // Setup UI for regular user
-                        setupUI(view, "user")
                     }
+                } else {
+                    isAdminRedirected = false // Normal user, allow profile page to load
                 }
             }
             .addOnFailureListener {
                 Log.e("UserProfile", "Failed to fetch user role, defaulting to user profile.")
-                requireActivity().runOnUiThread {
-                    setupUI(view, "user")
-                }
+                isAdminRedirected = false // Allow profile page to load
             }
     }
 
-    private fun setupUI(view: View, role: String) {
-        if (role == "admin") {
-            val btnViewOrders = view.findViewById<Button>(R.id.btnViewOrders)
-            btnViewOrders.setOnClickListener {
-                (activity as? MainActivity)?.loadFragment(AdminOrdersFragment())
-            }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        if (!isAdminRedirected) {
+            setupUI(view)
+        }
+    }
+
+    private fun setupUI(view: View) {
+        val profileImage = view.findViewById<ImageView>(R.id.profileImage)
+        val userName = view.findViewById<TextView>(R.id.userName)
+        val myOrdersButton = view.findViewById<Button>(R.id.btnMyOrders)
+        val uploadPhotoButton = view.findViewById<Button>(R.id.btnUploadPhoto)
+        val logoutButton = view.findViewById<Button>(R.id.btnLogout)
+
+        val user = auth.currentUser
+        userName.text = user?.displayName ?: "User"
+
+        val imageUrl = user?.photoUrl
+        if (imageUrl != null) {
+            Glide.with(requireContext())
+                .load(imageUrl)
+                .placeholder(R.drawable.blank_profile_img)
+                .into(profileImage)
         } else {
-            val profileImage = view.findViewById<ImageView>(R.id.profileImage)
-            val userName = view.findViewById<TextView>(R.id.userName)
-            val myOrdersButton = view.findViewById<Button>(R.id.btnMyOrders)
-            val uploadPhotoButton = view.findViewById<Button>(R.id.btnUploadPhoto)
-            val logoutButton = view.findViewById<Button>(R.id.btnLogout)
+            profileImage.setImageResource(R.drawable.blank_profile_img)
+        }
 
-            val user = auth.currentUser
-            userName.text = user?.displayName ?: "User"
+        myOrdersButton.setOnClickListener {
+            (activity as? MainActivity)?.loadFragment(MyOrdersFragment())
+        }
 
-            val imageUrl = user?.photoUrl
-            if (imageUrl != null) {
-                Glide.with(requireContext())
-                    .load(imageUrl)
-                    .placeholder(R.drawable.blank_profile_img)
-                    .into(profileImage)
-            } else {
-                profileImage.setImageResource(R.drawable.blank_profile_img)
-            }
+        uploadPhotoButton.setOnClickListener {
+            (activity as? MainActivity)?.loadFragment(EditProfileFragment())
+        }
 
-            myOrdersButton.setOnClickListener {
-                (activity as? MainActivity)?.loadFragment(MyOrdersFragment())
-            }
-
-            uploadPhotoButton.setOnClickListener {
-                (activity as? MainActivity)?.loadFragment(EditProfileFragment())
-            }
-
-            logoutButton.setOnClickListener {
-                logoutUser()
-            }
+        logoutButton.setOnClickListener {
+            logoutUser()
         }
     }
 

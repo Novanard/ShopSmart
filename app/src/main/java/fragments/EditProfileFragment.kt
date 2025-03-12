@@ -27,6 +27,7 @@ class EditProfileFragment : Fragment() {
     private lateinit var ivProfileImage: ImageView
     private lateinit var btnUploadImage: Button
     private lateinit var btnSave: Button
+    private lateinit var btnBackToProfile: Button
 
     private val auth = FirebaseAuth.getInstance()
     private val storage = FirebaseStorage.getInstance()
@@ -57,16 +58,15 @@ class EditProfileFragment : Fragment() {
         ivProfileImage = view.findViewById(R.id.ivProfileImage)
         btnUploadImage = view.findViewById(R.id.btnUploadImage)
         btnSave = view.findViewById(R.id.btnSave)
+        btnBackToProfile=view.findViewById((R.id.btnBackToProfile))
 
 
         loadCurrentUserData()
 
-        // Set up image upload button
         btnUploadImage.setOnClickListener {
             openImagePicker()
         }
 
-        // Set up save button
         btnSave.setOnClickListener {
             val newName = etName.text.toString().trim()
             if (newName.isNotEmpty() || imageUri != null) {
@@ -74,6 +74,9 @@ class EditProfileFragment : Fragment() {
             } else {
                 Toast.makeText(requireContext(), "No changes made", Toast.LENGTH_SHORT).show()
             }
+        }
+        btnBackToProfile.setOnClickListener{
+            (activity as MainActivity).loadFragment(UserProfileFragment())
         }
     }
 

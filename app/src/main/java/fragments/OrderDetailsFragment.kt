@@ -51,7 +51,7 @@ class OrderDetailsFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        // ✅ Load different XML layout based on userRole
+
         val layoutRes = if (userRole == "admin") R.layout.order_details_admin else R.layout.fragment_order_details
         return inflater.inflate(layoutRes, container, false)
     }
@@ -84,9 +84,12 @@ class OrderDetailsFragment : Fragment() {
 
         // Fetch order details
         fetchOrderDetails()
-
         btnBackToOrders.setOnClickListener {
-            (activity as? MainActivity)?.loadFragment(AdminOrdersFragment())
+            if (userRole == "admin") {
+                (activity as? MainActivity)?.loadFragment(AdminOrdersFragment())
+            } else {
+                (activity as? MainActivity)?.loadFragment(MyOrdersFragment())
+            }
         }
     }
 

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
@@ -50,7 +51,14 @@ class HomePageFragment : Fragment() {
         val cartViewModel = ViewModelProvider(requireActivity()).get(CartViewModel::class.java)
 
         featuredAdapter = ItemAdapter(emptyList(), isInOrderDetailsFragment = false) { item, quantity ->
-            cartViewModel.addItemToCart(item, quantity)
+            if (item.quantity == 0) {
+                Toast.makeText(context, "${item.name} is out of stock", Toast.LENGTH_SHORT).show()
+            } else if (quantity > item.quantity) {
+                Toast.makeText(context, "Only ${item.quantity} available for ${item.name}", Toast.LENGTH_SHORT).show()
+            } else {
+                cartViewModel.addItemToCart(item, quantity)
+                Toast.makeText(context, "${item.name} added to cart", Toast.LENGTH_SHORT).show()
+            }
         }
 
         featuredRecyclerView.adapter = featuredAdapter
@@ -58,6 +66,7 @@ class HomePageFragment : Fragment() {
 
         loadFeaturedProducts()
     }
+
 
 
     private fun loadFeaturedProducts() {

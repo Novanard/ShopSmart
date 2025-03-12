@@ -73,8 +73,8 @@ class LoginFragment : Fragment() {
     }
     private fun onLoginSuccess() {
         Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()
-        // Redirect to CartFragment after successful login
-        (activity as? MainActivity)?.loadFragment(CartFragment())
+        // Redirect to HomePage after successful login
+        (activity as? MainActivity)?.loadFragment(HomePageFragment())
     }
 
 }

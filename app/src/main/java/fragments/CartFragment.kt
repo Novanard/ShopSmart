@@ -179,17 +179,17 @@ class CartFragment : Fragment() {
             .addOnSuccessListener { documentReference ->
                 Log.d("CartFragment", "Order sent to Firestore with ID: ${documentReference.id}")
 
-                // Update timesSold for each item in Firestore
-                updateTimesSoldForItems(order)
-
+                updateInventoryForItems(order)
                 cartViewModel.clearCart()
                 Toast.makeText(requireContext(), "Order placed successfully!", Toast.LENGTH_SHORT).show()
+                navigateToMyOrdersFragment()
             }
             .addOnFailureListener { e ->
                 Log.e("CartFragment", "Error sending order to Firestore", e)
                 Toast.makeText(requireContext(), "Failed to place order. Please try again.", Toast.LENGTH_SHORT).show()
             }
     }
+
 
 
     private fun checkIfUserIsAdmin(callback: (Boolean) -> Unit) {
@@ -205,40 +205,40 @@ class CartFragment : Fragment() {
                 callback(false)
             }
     }
-    private fun updateTimesSoldForItems(order: Order) {
+    private fun updateInventoryForItems(order: Order) {
         val db = FirebaseFirestore.getInstance()
         val itemsCollection = db.collection("Items")
 
         for (orderItem in order.items) {
-            // Find the item using its unique name
             itemsCollection.whereEqualTo("name", orderItem.item.name).limit(1).get()
                 .addOnSuccessListener { documents ->
                     if (!documents.isEmpty) {
-                        val itemDoc = documents.documents[0] // Get the first matching document
-                        val itemRef = itemsCollection.document(itemDoc.id) // Get Firestore document reference
+                        val itemDoc = documents.documents[0]
+                        val itemRef = itemsCollection.document(itemDoc.id)
 
-                        // Get the current timesSold value and increment it
+                        // Get the current values
                         val currentTimesSold = itemDoc.getLong("timesSold") ?: 0
+                        val currentQuantity = itemDoc.getLong("quantity") ?: 0
+
                         val newTimesSold = currentTimesSold + orderItem.quantity
+                        val newQuantity = currentQuantity - orderItem.quantity
 
                         // Update Firestore
-                        itemRef.update("timesSold", newTimesSold)
-                            .addOnSuccessListener {
-                                Log.d("FirestoreDebug", "Updated ${orderItem.item.name}: timesSold = $newTimesSold")
-                            }
-                            .addOnFailureListener { e ->
-                                Log.e("FirestoreDebug", "Failed to update ${orderItem.item.name}: ${e.message}", e)
-                            }
+                        itemRef.update(mapOf(
+                            "timesSold" to newTimesSold,
+                            "quantity" to newQuantity
+                        )).addOnSuccessListener {
+                            Log.d("FirestoreDebug", "Updated ${orderItem.item.name}: timesSold = $newTimesSold, quantity = $newQuantity")
+                        }.addOnFailureListener { e ->
+                            Log.e("FirestoreDebug", "Failed to update ${orderItem.item.name}: ${e.message}", e)
+                        }
                     } else {
                         Log.e("FirestoreDebug", "Item not found in Firestore: ${orderItem.item.name}")
                     }
-                }
-                .addOnFailureListener { e ->
+                }.addOnFailureListener { e ->
                     Log.e("FirestoreDebug", "Firestore error while searching for ${orderItem.item.name}: ${e.message}", e)
                 }
         }
     }
 
-
-
-}
+    }

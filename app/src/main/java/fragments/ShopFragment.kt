@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -31,8 +32,16 @@ class ShopFragment : Fragment() {
 
         itemsRecyclerView = view.findViewById(R.id.itemsRecyclerView)
         itemAdapter = ItemAdapter(emptyList(), isInOrderDetailsFragment = false) { item, quantity ->
-            cartViewModel.addItemToCart(item, quantity)
+            if (item.quantity == 0) {
+                Toast.makeText(context, "${item.name} is out of stock", Toast.LENGTH_SHORT).show()
+            } else if (quantity > item.quantity) {
+                Toast.makeText(context, "Only ${item.quantity} available for ${item.name}", Toast.LENGTH_SHORT).show()
+            } else {
+                cartViewModel.addItemToCart(item, quantity)
+                Toast.makeText(context, "${item.name} added to cart", Toast.LENGTH_SHORT).show()
+            }
         }
+
 
         itemsRecyclerView.adapter = itemAdapter
         itemsRecyclerView.layoutManager = GridLayoutManager(context, 2)
@@ -59,7 +68,6 @@ class ShopFragment : Fragment() {
 
         return view
     }
-
 // Function to load items from Firestore for a specific department
     private fun loadItemsForDepartment(department: String) {
         val items = mutableListOf<Pair<Item, Int>>()

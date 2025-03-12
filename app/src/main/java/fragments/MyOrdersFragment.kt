@@ -5,12 +5,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.shopsmart.MainActivity
 import com.example.shopsmart.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.auth.User
 import utility.Order
 import utility.OrderAdapter
 
@@ -18,6 +21,7 @@ class MyOrdersFragment : Fragment() {
 
     private lateinit var ordersRecyclerView: RecyclerView
     private lateinit var orderAdapter: OrderAdapter
+    private lateinit var backToProfileButton: Button
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -34,7 +38,12 @@ class MyOrdersFragment : Fragment() {
         ordersRecyclerView.adapter = orderAdapter
         ordersRecyclerView.layoutManager = LinearLayoutManager(context)
 
+        backToProfileButton=view.findViewById(R.id.btnBackToProfile)
+        backToProfileButton.setOnClickListener{
+            (activity as MainActivity).loadFragment(UserProfileFragment())
+        }
         fetchUserOrders()
+
     }
 
     private fun fetchUserOrders() {
@@ -52,12 +61,11 @@ class MyOrdersFragment : Fragment() {
                     for (document in documents) {
                         val order = document.toObject(Order::class.java)
 
-                        // ✅ Manually extract booleans
                         order.isReady = document.getBoolean("isReady") ?: false
                         order.isShipped = document.getBoolean("isShipped") ?: false
                         order.isDelivered = document.getBoolean("isDelivered") ?: false
 
-                        order.orderId = document.id // ✅ Assign Firestore document ID
+                        order.orderId = document.id
                         orders.add(order)
                     }
                     Log.d("MyOrdersFragment", "Fetched ${orders.size} orders: $orders")
