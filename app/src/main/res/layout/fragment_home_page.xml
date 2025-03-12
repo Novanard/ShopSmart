@@ -60,11 +60,13 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/featuredProductsList"
         android:layout_width="0dp"
-        android:layout_height="200dp"
+        android:layout_height="400dp"
+        android:padding="8dp"
+        android:clipToPadding="false"
         app:layout_constraintTop_toBottomOf="@id/featuredTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp"
-        android:scrollbars="horizontal" />
+        android:scrollbars="vertical"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

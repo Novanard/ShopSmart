@@ -161,7 +161,6 @@ class OrderDetailsFragment : Fragment() {
             .addOnSuccessListener {
                 Log.d("OrderDetailsFragment", "Order $field updated to $value")
 
-                // ✅ Update UI immediately
                 orderStatus.text = "Status: $statusText"
 
                 Toast.makeText(requireContext(), "Order status updated!", Toast.LENGTH_SHORT).show()

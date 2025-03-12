@@ -34,7 +34,6 @@ class MyOrdersFragment : Fragment() {
         ordersRecyclerView.adapter = orderAdapter
         ordersRecyclerView.layoutManager = LinearLayoutManager(context)
 
-        // Fetch and display the user's orders
         fetchUserOrders()
     }
 

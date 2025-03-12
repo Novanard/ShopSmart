@@ -64,7 +64,6 @@ class FragmentAddProduct : Fragment() {
         etQuantity = view.findViewById(R.id.etQuantity)
         btnSubmit = view.findViewById(R.id.btnSubmit)
 
-        // Check user role
         checkUserRole()
     }
 
@@ -114,9 +113,6 @@ class FragmentAddProduct : Fragment() {
                     "quantity" to quantity,
                     "timesSold" to 0
                 )
-
-                // Debug: Log the product data
-                println("Product data to be added: $product")
 
                 db.collection("Items")
                     .add(product)

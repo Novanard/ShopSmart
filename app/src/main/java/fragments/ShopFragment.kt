@@ -62,7 +62,7 @@ class ShopFragment : Fragment() {
 
 // Function to load items from Firestore for a specific department
     private fun loadItemsForDepartment(department: String) {
-        val items = mutableListOf<Pair<Item, Int>>() // A list of Pair<Item, Int>
+        val items = mutableListOf<Pair<Item, Int>>()
 
         database.collection("Items")
             .whereEqualTo("department", department)
@@ -88,8 +88,7 @@ class ShopFragment : Fragment() {
                         department = doc.getString("department") ?: ""
                     )
 
-                    // Add the Item to the list paired with a quantity (in this case, defaulting to quantity 0)
-                    items.add(Pair(item, 0))  // You can replace '0' with any actual quantity if available
+                    items.add(Pair(item, item.quantity))
                 }
 
                 // Now that items are properly paired with quantities, update the adapter

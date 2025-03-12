@@ -58,7 +58,7 @@ class EditProfileFragment : Fragment() {
         btnUploadImage = view.findViewById(R.id.btnUploadImage)
         btnSave = view.findViewById(R.id.btnSave)
 
-        // Load current user data
+
         loadCurrentUserData()
 
         // Set up image upload button
@@ -103,7 +103,6 @@ class EditProfileFragment : Fragment() {
         }
 
         if (imageUri != null) {
-            // Upload new profile picture
             uploadProfileImage { imageUrl ->
                 val profileUpdates = userProfileChangeRequest {
                     displayName = newName

@@ -8,6 +8,7 @@ data class Order(
     val items: List<OrderItem> = emptyList(),
     val totalPrice: Double = 0.0,
     val timestamp: Long = 0L,
+
     @get:PropertyName("isReady") @set:PropertyName("isReady")
     var isReady: Boolean = false,
 

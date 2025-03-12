@@ -15,7 +15,7 @@ class CartViewModel : ViewModel() {
         _cartItems.value = mutableListOf()
     }
 
-    // Add item to the cart
+
     fun addItemToCart(item: Item, quantity: Int) {
         val currentItems = _cartItems.value ?: mutableListOf()
         val existingItem = currentItems.find { it.first == item }

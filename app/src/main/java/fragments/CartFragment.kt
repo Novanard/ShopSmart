@@ -48,7 +48,7 @@ class CartFragment : Fragment() {
         // Check if the user is an admin
         checkIfUserIsAdmin { isAdmin ->
             if (isAdmin) {
-                // Redirect admin users to the AdminPanelFragment
+                // Redirect admin users to the AdminPanelFragment(Admin doesnt need cart)
                 (activity as? MainActivity)?.loadFragment(AdminPageFragment())
                 return@checkIfUserIsAdmin
             }
@@ -178,6 +178,10 @@ class CartFragment : Fragment() {
         ordersCollection.add(orderData)
             .addOnSuccessListener { documentReference ->
                 Log.d("CartFragment", "Order sent to Firestore with ID: ${documentReference.id}")
+
+                // Update timesSold for each item in Firestore
+                updateTimesSoldForItems(order)
+
                 cartViewModel.clearCart()
                 Toast.makeText(requireContext(), "Order placed successfully!", Toast.LENGTH_SHORT).show()
             }
@@ -186,6 +190,7 @@ class CartFragment : Fragment() {
                 Toast.makeText(requireContext(), "Failed to place order. Please try again.", Toast.LENGTH_SHORT).show()
             }
     }
+
 
     private fun checkIfUserIsAdmin(callback: (Boolean) -> Unit) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return callback(false)
@@ -200,4 +205,40 @@ class CartFragment : Fragment() {
                 callback(false)
             }
     }
+    private fun updateTimesSoldForItems(order: Order) {
+        val db = FirebaseFirestore.getInstance()
+        val itemsCollection = db.collection("Items")
+
+        for (orderItem in order.items) {
+            // Find the item using its unique name
+            itemsCollection.whereEqualTo("name", orderItem.item.name).limit(1).get()
+                .addOnSuccessListener { documents ->
+                    if (!documents.isEmpty) {
+                        val itemDoc = documents.documents[0] // Get the first matching document
+                        val itemRef = itemsCollection.document(itemDoc.id) // Get Firestore document reference
+
+                        // Get the current timesSold value and increment it
+                        val currentTimesSold = itemDoc.getLong("timesSold") ?: 0
+                        val newTimesSold = currentTimesSold + orderItem.quantity
+
+                        // Update Firestore
+                        itemRef.update("timesSold", newTimesSold)
+                            .addOnSuccessListener {
+                                Log.d("FirestoreDebug", "Updated ${orderItem.item.name}: timesSold = $newTimesSold")
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e("FirestoreDebug", "Failed to update ${orderItem.item.name}: ${e.message}", e)
+                            }
+                    } else {
+                        Log.e("FirestoreDebug", "Item not found in Firestore: ${orderItem.item.name}")
+                    }
+                }
+                .addOnFailureListener { e ->
+                    Log.e("FirestoreDebug", "Firestore error while searching for ${orderItem.item.name}: ${e.message}", e)
+                }
+        }
+    }
+
+
+
 }
