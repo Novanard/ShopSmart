@@ -6,12 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shopsmart.MainActivity
 import com.example.shopsmart.R
 import com.google.firebase.firestore.FirebaseFirestore
+import utility.CartViewModel
 import utility.Item
 import utility.ItemAdapter
 
@@ -45,12 +47,18 @@ class HomePageFragment : Fragment() {
     }
 
     private fun setupFeaturedProducts() {
-        featuredAdapter = ItemAdapter(emptyList(),isInOrderDetailsFragment = false)
+        val cartViewModel = ViewModelProvider(requireActivity()).get(CartViewModel::class.java)
+
+        featuredAdapter = ItemAdapter(emptyList(), isInOrderDetailsFragment = false) { item, quantity ->
+            cartViewModel.addItemToCart(item, quantity)
+        }
+
         featuredRecyclerView.adapter = featuredAdapter
         featuredRecyclerView.layoutManager = GridLayoutManager(context, 2)
 
         loadFeaturedProducts()
     }
+
 
     private fun loadFeaturedProducts() {
         database.collection("Items")
